@@ -5,7 +5,6 @@ const multer = require('multer');
 const session = require('express-session');
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
-const secret = new TextEncoder().encode('your-secret-key');
 
 const app = express();
 const server = http.createServer(app);

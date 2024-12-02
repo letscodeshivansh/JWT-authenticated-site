@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Landing Page</title>
+  <link rel="stylesheet" href="style.css">
+  
+</head>
+<body>
+  <h1>Welcome to the Landing Page!</h1>
+  <p class="welcome">Hi <%= username %></p>
+  <div class="logout">
+    <form action="/logout" method="POST">
+      <button type="submit">Logout</button>
+    </form>
+  </div>
+</body>
+</html>

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Landing Page</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header>
+    <h1>Welcome, <%= loggedInUsername %>!</h1>
+    <p>Your role: <%= role %></p>
+  </header>
+
+  <main>
+    <% if (role === 'Admin') { %>
+      <section>
+        <h2>Admin Dashboard</h2>
+        <p>Welcome to the admin area. You can manage users and configure the system here.</p>
+        <a href="/admin">Go to Admin Panel</a>
+      </section>
+    <% } else if (role === 'User') { %>
+      <section>
+        <h2>User Dashboard</h2>
+        <p>Welcome to your user dashboard. You can view your profile and settings here.</p>
+        <a href="/profile">Go to Profile</a>
+      </section>
+    <% } %>
+  </main>
+
+  <footer>
+    <a href="/logout">Logout</a>
+  </footer>
+</body>
+</html>

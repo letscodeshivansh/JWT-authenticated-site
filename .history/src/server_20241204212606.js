@@ -103,8 +103,9 @@ app.post('/login', async (req, res) => {
     }
 
     const token = generateToken(user);
-    res.cookie('token', token, { httpOnly: true }); 
+    res.cookie('token', token, { httpOnly: true }); // Store token securely in cookies
 
+    // Redirect based on user role
     switch (user.role) {
       case 'Admin':
         return res.redirect('/admin');
@@ -122,7 +123,7 @@ app.post('/login', async (req, res) => {
 });
 
 
-//Signup
+// Signup Handler
 app.post(
   '/signup',
   [

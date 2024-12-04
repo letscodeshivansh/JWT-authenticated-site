@@ -20,36 +20,36 @@ app.use(cookieParser());
 app.use(express.urlencoded({ extended: false }));
 app.use(
   session({
-    secret: 'yourSecretKey',
+    secretKey: 'yourSecretKey',
     resave: false,
     saveUninitialized: true,
   })
 );
 
-//Static Files and View Engine
+// Static Files and View Engine
 const parentDir = path.join(__dirname, '../');
 app.use(express.static(path.join(parentDir, 'public')));
 app.use(express.static(path.join(parentDir, 'assets')));
 app.set('views', path.join(parentDir, 'templates'));
 app.set('view engine', 'ejs');
 
-//MongoDB Connection
+// MongoDB Connection
 mongoose
   .connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log('MongoDB connected'))
   .catch((err) => console.error('MongoDB connection error:', err));
 
   const authenticateJWT = (req, res, next) => {
-    const token = req.cookies.token;
-    console.log(token)
+    const token = req.cookies.token; // Retrieve token from cookies
+    console.log(token);
     if (!token) {
       console.log('No token provided');
       return res.status(401).json({ error: 'Access Denied: No Token Provided!' });
     }
   
     try {
-      const verified = jwt.verify(token, secretKey); 
-      req.user = verified; 
+      const verified = jwt.verify(token, secretKey); // Verify token
+      req.user = verified; // Attach user info to the request object
       console.log('Token verified successfully:', verified);
       next();
     } catch (err) {
@@ -59,7 +59,7 @@ mongoose
   };
   
 
-//Role-Based Authorization Middleware
+// Role-Based Authorization Middleware
 const authorizeRole = (role) => (req, res, next) => {
   if (req.user.role !== role) {
     return res.status(403).json({ error: 'Access Denied: Insufficient Permissions!' });
@@ -67,12 +67,14 @@ const authorizeRole = (role) => (req, res, next) => {
   next();
 };
 
+// Routes
+
 // Landing Page
 app.get('/', (req, res) => res.render('login'));
 app.get('/login', (req, res) => res.render('login'));
 app.get('/signup', (req, res) => res.render('signup'));
 
-//Role-Based Landing
+// Role-Based Landing
 app.get('/landing', authenticateJWT, (req, res) => {
   const { role } = req.user;
   if (role === 'Admin') return res.redirect('/admin');
@@ -81,30 +83,35 @@ app.get('/landing', authenticateJWT, (req, res) => {
   res.status(403).send('Access Denied: Role not recognized.');
 });
 
-//Role-Specific Routes
+// Role-Specific Routes
 app.get('/profile', authenticateJWT, authorizeRole('User'), (req, res) => res.render('user'));
 app.get('/admin', authenticateJWT, authorizeRole('Admin'), (req, res) => res.render('admin'));
 app.get('/moderator', authenticateJWT, authorizeRole('Moderator'), (req, res) => res.render('moderator'));
 
-//Logout
+// Logout
 app.get('/logout', (req, res) => {
   res.clearCookie('token');
   res.redirect('/login');
 });
 
-//Login
+// Login Handler
 app.post('/login', async (req, res) => {
   try {
     const { username, password } = req.body;
+
+    // Find user by username
     const user = await User.findOne({ username });
 
+    // Validate user existence and password
     if (!user || !(await bcrypt.compare(password, user.password))) {
       return res.status(401).render('login', { error: 'Invalid username or password' });
     }
 
+    // Generate JWT token and store in a cookie
     const token = generateToken(user);
-    res.cookie('token', token, { httpOnly: true }); 
+    res.cookie('token', token, { httpOnly: true }); // Store token securely in cookies
 
+    // Redirect based on user role
     switch (user.role) {
       case 'Admin':
         return res.redirect('/admin');
@@ -122,7 +129,7 @@ app.post('/login', async (req, res) => {
 });
 
 
-//Signup
+// Signup Handler
 app.post(
   '/signup',
   [

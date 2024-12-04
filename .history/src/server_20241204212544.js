@@ -81,30 +81,35 @@ app.get('/landing', authenticateJWT, (req, res) => {
   res.status(403).send('Access Denied: Role not recognized.');
 });
 
-//Role-Specific Routes
+// Role-Specific Routes
 app.get('/profile', authenticateJWT, authorizeRole('User'), (req, res) => res.render('user'));
 app.get('/admin', authenticateJWT, authorizeRole('Admin'), (req, res) => res.render('admin'));
 app.get('/moderator', authenticateJWT, authorizeRole('Moderator'), (req, res) => res.render('moderator'));
 
-//Logout
+// Logout
 app.get('/logout', (req, res) => {
   res.clearCookie('token');
   res.redirect('/login');
 });
 
-//Login
+// Login Handler
 app.post('/login', async (req, res) => {
   try {
     const { username, password } = req.body;
+
+    // Find user by username
     const user = await User.findOne({ username });
 
+    // Validate user existence and password
     if (!user || !(await bcrypt.compare(password, user.password))) {
       return res.status(401).render('login', { error: 'Invalid username or password' });
     }
 
+    // Generate JWT token and store in a cookie
     const token = generateToken(user);
-    res.cookie('token', token, { httpOnly: true }); 
+    res.cookie('token', token, { httpOnly: true }); // Store token securely in cookies
 
+    // Redirect based on user role
     switch (user.role) {
       case 'Admin':
         return res.redirect('/admin');
@@ -122,7 +127,7 @@ app.post('/login', async (req, res) => {
 });
 
 
-//Signup
+// Signup Handler
 app.post(
   '/signup',
   [

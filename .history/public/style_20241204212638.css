@@ -7,7 +7,7 @@ body {
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background: linear-gradient(135deg, #00203F, #ADEFD1); 
+  background: linear-gradient(135deg, #00203F, #ADEFD1); /* Dark and mint gradient */
   color: #fff;
 }
 

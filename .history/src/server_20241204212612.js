@@ -122,7 +122,7 @@ app.post('/login', async (req, res) => {
 });
 
 
-//Signup
+// Signup Handler
 app.post(
   '/signup',
   [
